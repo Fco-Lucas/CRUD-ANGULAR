@@ -1,4 +1,32 @@
 @import "tailwindcss";
 
+* { border: 0; }
 html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; border: 0; }
+
+.snackbar-success {
+  background-color: #4CAF50 !important; /* Verde */
+  color: red !important;
+}
+
+.snackbar-success .mat-simple-snackbar-action {
+  color: white !important; /* Estiliza o botão de ação dentro do snackbar de sucesso */
+}
+
+.snackbar-error {
+  background-color: #F44336 !important; /* Vermelho */
+  color: white !important;
+}
+
+.snackbar-error .mat-simple-snackbar-action {
+  color: white !important; /* Estiliza o botão de ação dentro do snackbar de erro */
+}
+
+.snackbar-info {
+  background-color: #2196F3 !important; /* Azul */
+  color: white !important;
+}
+
+.snackbar-info .mat-simple-snackbar-action {
+  color: white !important; /* Estiliza o botão de ação dentro do snackbar de informação */
+}
