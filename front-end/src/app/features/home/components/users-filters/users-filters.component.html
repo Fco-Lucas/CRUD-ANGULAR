@@ -1,0 +1,32 @@
+<form [formGroup]="filtersForm" (ngSubmit)="onSubmit()">
+  <div class="grid grid-cols-4 gap-2 items-center">
+    <mat-form-field appearance="outline" class="col-span-4 md:col-span-2">
+      <mat-label>Nome</mat-label>
+      <input type="text" matInput formControlName="name" />
+    </mat-form-field>
+    <mat-form-field appearance="outline" class="col-span-4 md:col-span-1">
+      <mat-label>CPF</mat-label>
+      <input
+        matInput
+        type="text"
+        formControlName="cpf"
+        placeholder="000.000.000-00"
+        mask="000.000.000-00"  
+        [dropSpecialCharacters]="true"  
+      />
+      <mat-error *ngIf="cpfControl?.hasError('pattern') && cpfControl?.touched">
+        CPF deve conter apenas números.
+      </mat-error>
+    </mat-form-field>
+    <button
+      mat-raised-button
+      color="primary"
+      type="submit"
+      [disabled]="isSubmitButtonDisabled()"
+      class="col-span-4 md:col-span-1 text-lg rounded-md"
+    >
+      <span *ngIf="!isLoading">Filtrar resultados</span>
+      <mat-spinner *ngIf="isLoading" diameter="24" class="mx-auto"></mat-spinner>
+    </button>
+  </div>
+</form>

@@ -1,49 +1,64 @@
-import { Component, EventEmitter, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-
-import { MatCardModule } from '@angular/material/card';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatIconModule } from '@angular/material/icon';
 import { RouterModule } from '@angular/router';
+import { NgxMaskDirective } from 'ngx-mask';
 
-export interface LoginFormValues {
-  email: string;
-  password: string;
-}
+import { MaterialImports } from '../../../../shared/material.imports';
+
+import { LoginFormValues } from '../../models/login.modules';
 
 @Component({
   selector: 'app-login-form',
   imports: [
     CommonModule,
-    ReactiveFormsModule, // Essencial para Formulários Reativos
+    ReactiveFormsModule,
     RouterModule,
-    MatCardModule,       // Componente de Card do Material
-    MatFormFieldModule,  // Campo de formulário do Material
-    MatInputModule,      // Input de texto do Material
-    MatButtonModule,     // Botão do Material
-    MatIconModule        // Ícones do Material (opcional, mas bom ter)
+    NgxMaskDirective,
+    ...MaterialImports
   ],
   templateUrl: './login-form.component.html',
 })
 export class LoginFormComponent {
-  // EventEmitter para enviar os dados do formulário para o componente pai (LoginPageComponent)
+  // Dispara um evento para a página na qual irá importar o componente
   @Output()
   submitForm = new EventEmitter<LoginFormValues>();
 
+  @Input()
+  isLoading: boolean = false;
+
   loginForm = new FormGroup({
-    email: new FormControl("", [Validators.required, Validators.email]),
-    password: new FormControl("", Validators.required)
+    cpf: new FormControl("", [
+      Validators.required,
+      Validators.minLength(11),
+      Validators.maxLength(11),
+      Validators.pattern("^[0-9]*$") // Aceita apenas números
+    ]),
+    password: new FormControl("", [Validators.required, Validators.minLength(6)]) // Exemplo de minlength para senha
   });
 
+
   onSubmit() {
+    // Marca todos os campos como tocados para exibir erros imediatamente
+    this.loginForm.markAllAsTouched();
+
     if(!this.loginForm.valid) {
       console.error(this.loginForm.errors);
       return;
     }
 
     this.submitForm.emit(this.loginForm.value as LoginFormValues);
+  }
+
+  get cpfControl() {
+    return this.loginForm.get('cpf');
+  }
+
+  get passwordControl() {
+    return this.loginForm.get('password');
+  }
+
+  isSubmitButtonDisabled(): boolean {
+    return this.loginForm.invalid || this.isLoading;
   }
 }

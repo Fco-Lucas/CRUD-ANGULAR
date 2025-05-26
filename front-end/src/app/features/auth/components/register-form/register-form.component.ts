@@ -3,59 +3,57 @@ import { CommonModule } from '@angular/common';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
-import { passwordMatchValidator } from '../../../../shared/validators/password-match.validator';
-
 import { MaterialImports } from '../../../../shared/material.imports';
 
-export interface RegisterFormValues {
-  name: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-}
-
-export interface RegisterFormValuesResponse {
-  name: string;
-  email: string;
-  password: string;
-}
+import { RegisterFormValues } from '../../models/register.modules';
+import { NgxMaskDirective } from 'ngx-mask';
 
 @Component({
-  selector: "app-register-form",
+  selector: 'app-register-form',
   imports: [
     CommonModule,
     ReactiveFormsModule,
     RouterModule,
+    NgxMaskDirective,
     ...MaterialImports
   ],
-  templateUrl: "./register-form.component.html"
+  templateUrl: './register-form.component.html',
 })
 export class RegisterFormComponent {
   @Output()
-  submitForm = new EventEmitter<RegisterFormValuesResponse>();
+  submitForm = new EventEmitter<RegisterFormValues>();
 
   @Input()
   isLoading: boolean = false;
 
   registerForm = new FormGroup({
-    name: new FormControl('', Validators.required),
-    email: new FormControl('', [Validators.required, Validators.email]),
-    password: new FormControl('', [
+    name: new FormControl("", [Validators.required, Validators.maxLength(255)]),
+    cpf: new FormControl("", [
       Validators.required,
-      Validators.minLength(6),
+      Validators.minLength(11),
+      Validators.maxLength(11),
+      Validators.pattern("^[0-9]*$") // Aceita apenas números
     ]),
-    confirmPassword: new FormControl('', Validators.required)
-  }, { validators: passwordMatchValidator('password', 'confirmPassword') });
+    password: new FormControl("", [Validators.required, Validators.minLength(6)])
+  });
 
   onSubmit() {
-    // Marca todos os campos como tocados para exibir erros imediatamente
-    this.registerForm.markAllAsTouched();
+    if(!this.registerForm.valid) {
+      console.error(this.registerForm.errors)
+      return;
+    }
 
-    if(!this.registerForm.valid) return console.error('Formulário inválido. Verifique os campos.', this.registerForm.errors);
+    this.submitForm.emit(this.registerForm.value as RegisterFormValues);
+  }
 
-    const { confirmPassword, ...dataToSend } = this.registerForm.value as RegisterFormValues;
-    this.submitForm.emit(dataToSend);
-    // this.registerForm.reset();
+  get nameControl () {
+    return this.registerForm.get("name");
+  }
+  get cpfControl() {
+    return this.registerForm.get("cpf");
+  }
+  get passwordControl() {
+    return this.registerForm.get("password");
   }
 
   isSubmitButtonDisabled(): boolean {

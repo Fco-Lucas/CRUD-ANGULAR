@@ -1,7 +1,6 @@
-<div class="min-h-screen bg-gray-100 px-4">
-  <app-register-form 
-    class="h-screen flex items-center justify-center"
-    [isLoading]="isLoading"
-    (submitForm)="onRegisterFormSubmit($event)
-  "></app-register-form>
+<div class="flex items-center justify-center min-h-screen p-4">
+  <app-register-form
+  [isLoading]="isLoading"
+  (submitForm)="handleRegisterSubmit($event)"
+  ></app-register-form>
 </div>

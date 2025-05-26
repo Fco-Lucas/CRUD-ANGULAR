@@ -1,39 +1,60 @@
-<mat-card>
-  <mat-card-header class="flex flex-col items-center text-center mb-4">
-    <mat-card-title class="text-3xl font-bold text-gray-800">Login</mat-card-title>
-    <mat-card-subtitle class="text-gray-600 mt-2">Acesse sua conta</mat-card-subtitle>
+<mat-card class="w-full max-w-md shadow-xl rounded-lg">
+  <mat-card-header class="justify-center py-6 rounded-t-lg mb-3">
+    <mat-card-title class="text-3xl font-bold text-white">Login</mat-card-title>
   </mat-card-header>
-
-  <mat-card-content>
-    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-4">
+  <mat-card-content class="p-6 md:p-8">
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-1">
       <mat-form-field appearance="outline" class="w-full">
-        <mat-label>Email</mat-label>
-        <input matInput type="email" formControlName="email" required>
-        <mat-error *ngIf="loginForm.get('email')?.hasError('required') && loginForm.get('email')?.touched">
-          Email é obrigatório.
+        <mat-label>CPF</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="cpf"
+          placeholder="000.000.000-00"
+          mask="000.000.000-00"  
+          [dropSpecialCharacters]="true" 
+          required 
+        />
+        <mat-error *ngIf="cpfControl?.hasError('required') && cpfControl?.touched">
+          CPF é obrigatório.
         </mat-error>
-        <mat-error *ngIf="loginForm.get('email')?.hasError('email') && loginForm.get('email')?.touched">
-          Por favor, insira um email válido.
+        <mat-error *ngIf="cpfControl?.hasError('minlength') && cpfControl?.touched">
+          CPF deve ter {{ cpfControl?.errors?.['minlength']?.requiredLength }} dígitos.
+        </mat-error>
+        <mat-error *ngIf="cpfControl?.hasError('maxlength') && cpfControl?.touched">
+          CPF deve ter no máximo {{ cpfControl?.errors?.['maxlength']?.requiredLength }} dígitos.
+        </mat-error>
+        <mat-error *ngIf="cpfControl?.hasError('pattern') && cpfControl?.touched">
+          CPF deve conter apenas números.
         </mat-error>
       </mat-form-field>
 
       <mat-form-field appearance="outline" class="w-full">
         <mat-label>Senha</mat-label>
-        <input matInput type="password" formControlName="password" required>
-        <mat-error *ngIf="loginForm.get('password')?.hasError('required') && loginForm.get('password')?.touched">
+        <input matInput formControlName="password" type="password" placeholder="Sua senha" required>
+        <mat-error *ngIf="passwordControl?.hasError('required') && passwordControl?.touched">
           Senha é obrigatória.
+        </mat-error>
+        <mat-error *ngIf="passwordControl?.hasError('minlength') && passwordControl?.touched">
+          Senha deve ter no mínimo {{ passwordControl?.errors?.['minlength']?.requiredLength }} caracteres.
         </mat-error>
       </mat-form-field>
 
-      <button mat-raised-button color="primary" type="submit" [disabled]="loginForm.invalid" class="w-full py-2 text-lg">
-        Entrar
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
+        [disabled]="isSubmitButtonDisabled()"
+        class="w-full h-12 text-lg rounded-md"
+      >
+        <span *ngIf="!isLoading">Entrar</span>
+        <mat-spinner *ngIf="isLoading" diameter="24" class="mx-auto"></mat-spinner>
       </button>
     </form>
   </mat-card-content>
-
-  <mat-card-actions class="flex justify-center mt-4">
-    <button mat-button color="accent" routerLink="/auth/register">
-      Não tem conta? Cadastre-se
-    </button>
+  <mat-card-actions class="flex justify-center pt-2 pb-6">
+    <a routerLink="/auth/register" class="text-sm font-medium text-blue-600 hover:text-blue-500 cursor-pointer">
+      Não tem uma conta? Registre-se
+    </a>
   </mat-card-actions>
 </mat-card>

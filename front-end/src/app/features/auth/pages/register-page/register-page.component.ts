@@ -1,45 +1,60 @@
-import { Component } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy, ChangeDetectorRef, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { finalize } from 'rxjs/operators';
 
-import { RegisterFormComponent, RegisterFormValuesResponse } from '../../components/register-form/register-form.component';
-import { AuthService } from '../../../../core/auth/auth.service';
-import { NotificationService } from '../../../../core/services/notification.service';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+
+import { RegisterFormComponent } from '../../components/register-form/register-form.component';
+import { RegisterFormValues } from '../../models/register.modules';
+import { UserService } from '../../../../core/services/users.service';
+import { CreateUserInterface } from '../../../../core/models/users.models';
 
 @Component({
   selector: 'app-register-page',
-  standalone: true,
   imports: [
+    RegisterFormComponent, 
     CommonModule,
-    RegisterFormComponent // Importa o componente do formulário de registro
+    MatSnackBarModule
   ],
   templateUrl: './register-page.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RegisterPageComponent {
+  private userService = inject(UserService);
+  private router = inject(Router);
+  private snackBar = inject(MatSnackBar);
+  private cdr = inject(ChangeDetectorRef);
+
   isLoading: boolean = false;
+  errorMessage: string | null = null;
 
-  constructor(
-    private router: Router,
-    private notificationService: NotificationService,
-    private authService: AuthService 
-  ) {}
-
-  // Método que será chamado quando o formulário de registro for submetido
-  async onRegisterFormSubmit(formData: RegisterFormValuesResponse) {
+  handleRegisterSubmit(formValues: RegisterFormValues): void {
     this.isLoading = true;
-    
-    await new Promise(resolve => setTimeout(resolve, 4000));
+    this.errorMessage = null;
+    this.cdr.detectChanges();
 
-    this.authService.register(formData).pipe(
-      finalize(() => { this.isLoading = false; })
-    ).subscribe({
+    const credentials: CreateUserInterface = {
+      name: formValues.name || '',
+      cpf: formValues.cpf || '',
+      password: formValues.password || '',
+    };
+
+    this.userService.register(credentials).subscribe({
       next: (response) => {
-        console.log('Registro bem-sucedido!', response);
-        this.router.navigate(['/auth/login']); // Redirecionar para a página de login
+        this.isLoading = false;
+        this.cdr.detectChanges();
+        this.snackBar.open('Cadastro realizado com sucesso!', 'Fechar', {
+          duration: 3000, horizontalPosition: 'center', verticalPosition: 'top', panelClass: ['success-snackbar']
+        });
+        this.router.navigateByUrl("/auth/login");
       },
-      error: (error) => {
-        console.error('Erro de registro capturado na página:', error);
+      error: (err) => {
+        this.errorMessage = err.message;
+        this.isLoading = false;
+        this.cdr.detectChanges();
+        this.snackBar.open(this.errorMessage ?? "Falha no login.", 'Fechar', {
+          duration: 5000, horizontalPosition: 'center', verticalPosition: 'top', panelClass: ['error-snackbar']
+        });
       }
     });
   }

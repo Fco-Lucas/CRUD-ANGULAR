@@ -1,76 +1,69 @@
-<mat-card class="w-full max-w-lg md:max-w-xl shadow-xl p-6 md:p-8 rounded-2xl bg-white">
-  <mat-card-header class="flex flex-col items-center text-center mb-6">
-    <mat-card-title class="text-4xl font-bold text-gray-800">Registro</mat-card-title>
-    <mat-card-subtitle class="text-gray-600 mt-2 text-base">Crie sua nova conta</mat-card-subtitle>
+<mat-card class="w-full max-w-md shadow-xl rounded-lg">
+  <mat-card-header class="justify-center py-6 rounded-t-lg mb-3">
+    <mat-card-title class="text-3xl font-bold text-white">Cadastro</mat-card-title>
   </mat-card-header>
-
-  <mat-card-content>
-    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-5">
-      <!-- Nome -->
+  <mat-card-content class="p-6 md:p-8">
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-1">
       <mat-form-field appearance="outline" class="w-full">
-        <mat-label>Nome Completo</mat-label>
-        <input matInput type="text" formControlName="name" placeholder="Seu nome" required>
-        <mat-error *ngIf="registerForm.get('name')?.hasError('required') && registerForm.get('name')?.touched">
-          Nome é obrigatório.
+        <mat-label>Nome</mat-label>
+        <input matInput type="text" autocomplete="off" formControlName="name" maxlength="255" />
+        <mat-error *ngIf="nameControl?.hasError('required') && nameControl?.touched">
+          Nome é obrigatório
+        </mat-error>
+        <mat-error *ngIf="nameControl?.hasError('maxlenght') && nameControl?.touched">
+          Nome deve ter no máximo {{ nameControl?.errors?.['maxlength']?.requiredLength }} dígitos.
         </mat-error>
       </mat-form-field>
-
-      <!-- Email -->
       <mat-form-field appearance="outline" class="w-full">
-        <mat-label>Email</mat-label>
-        <input matInput type="email" formControlName="email" placeholder="seuemail@exemplo.com" required>
-        <mat-error *ngIf="registerForm.get('email')?.hasError('required') && registerForm.get('email')?.touched">
-          Email é obrigatório.
+        <mat-label>CPF</mat-label>
+        <input
+          matInput
+          type="text"
+          formControlName="cpf"
+          placeholder="000.000.000-00"
+          mask="000.000.000-00"  
+          [dropSpecialCharacters]="true" 
+          required 
+        />
+        <mat-error *ngIf="cpfControl?.hasError('required') && cpfControl?.touched">
+          CPF é obrigatório.
         </mat-error>
-        <mat-error *ngIf="registerForm.get('email')?.hasError('email') && registerForm.get('email')?.touched">
-          Por favor, insira um email válido.
+        <mat-error *ngIf="cpfControl?.hasError('minlength') && cpfControl?.touched">
+          CPF deve ter {{ cpfControl?.errors?.['minlength']?.requiredLength }} dígitos.
+        </mat-error>
+        <mat-error *ngIf="cpfControl?.hasError('maxlength') && cpfControl?.touched">
+          CPF deve ter no máximo {{ cpfControl?.errors?.['maxlength']?.requiredLength }} dígitos.
+        </mat-error>
+        <mat-error *ngIf="cpfControl?.hasError('pattern') && cpfControl?.touched">
+          CPF deve conter apenas números.
         </mat-error>
       </mat-form-field>
-
-      <!-- Senha -->
       <mat-form-field appearance="outline" class="w-full">
         <mat-label>Senha</mat-label>
-        <input matInput type="password" formControlName="password" placeholder="Sua senha" required>
-        <mat-error *ngIf="registerForm.get('password')?.hasError('required') && registerForm.get('password')?.touched">
+        <input matInput formControlName="password" type="password" placeholder="Sua senha" required>
+        <mat-error *ngIf="passwordControl?.hasError('required') && passwordControl?.touched">
           Senha é obrigatória.
         </mat-error>
-        <mat-error *ngIf="registerForm.get('password')?.hasError('minlength') && registerForm.get('password')?.touched">
-          Senha deve ter no mínimo {{ registerForm.get('password')?.errors?.['minlength']?.requiredLength }} caracteres.
-        </mat-error>
-        <mat-error *ngIf="registerForm.get('password')?.hasError('pattern') && registerForm.get('password')?.touched">
-          Senha deve conter letras maiúsculas, minúsculas, números e caracteres especiais.
+        <mat-error *ngIf="passwordControl?.hasError('minlength') && passwordControl?.touched">
+          Senha deve ter no mínimo {{ passwordControl?.errors?.['minlength']?.requiredLength }} caracteres.
         </mat-error>
       </mat-form-field>
 
-      <!-- Confirmar Senha -->
-      <mat-form-field appearance="outline" class="w-full">
-        <mat-label>Confirmar Senha</mat-label>
-        <input matInput type="password" formControlName="confirmPassword" placeholder="Confirme sua senha" required>
-        <mat-error *ngIf="registerForm.get('confirmPassword')?.hasError('required') && registerForm.get('confirmPassword')?.touched">
-          Confirmação de Senha é obrigatória.
-        </mat-error>
-        <mat-error *ngIf="registerForm.get('confirmPassword')?.hasError('passwordMismatch') && registerForm.get('confirmPassword')?.touched">
-          Senhas não coincidem.
-        </mat-error>
-      </mat-form-field>
-
-      <!-- Botão de Registro -->
-      <button 
-        mat-raised-button 
-        color="primary" 
-        type="submit" 
+      <button
+        mat-raised-button
+        color="primary"
+        type="submit"
         [disabled]="isSubmitButtonDisabled()"
-        class="w-full py-3 text-lg font-semibold"
+        class="w-full h-12 text-lg rounded-md"
       >
-        <span *ngIf="!isLoading">Registrar</span>
-        <span *ngIf="isLoading">Carregando...</span>
+        <span *ngIf="!isLoading">Entrar</span>
+        <mat-spinner *ngIf="isLoading" diameter="24" class="mx-auto"></mat-spinner>
       </button>
     </form>
   </mat-card-content>
-
-  <mat-card-actions class="flex justify-center mt-6">
-    <button mat-button color="accent" routerLink="/auth/login" class="text-sm">
-      Já tem conta? Faça Login
-    </button>
+  <mat-card-actions class="flex justify-center pt-2 pb-6">
+    <a routerLink="/auth/login" class="text-sm font-medium text-blue-600 hover:text-blue-500 cursor-pointer">
+      Já possui uma conta? Realize o login
+    </a>
   </mat-card-actions>
 </mat-card>

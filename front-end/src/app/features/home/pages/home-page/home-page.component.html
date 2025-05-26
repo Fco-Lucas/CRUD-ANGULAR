@@ -1,0 +1,23 @@
+<main class="p-4 sm:p-6 w-full max-w-full overflow-x-hidden">
+  <header class="flex flex-col mb-3">
+    <p class="text-2xl font-bold mb-3">Usuários</p>
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-0">
+      <app-users-filters></app-users-filters>
+      <button mat-button>Novo usuário</button>
+
+      <!-- <SectorsFilters /> -->
+      <!-- <Dialog open={dialogCreatedOpen} onOpenChange={setDialogCreatedOpen}>
+        <DialogTrigger asChild>
+            <Button type="button" class="cursor-pointer" variant="default" onClick={() => setDialogCreatedOpen(true)}>
+              <CirclePlus class="w-4 h-4" />
+              Novo setor
+            </Button>
+        </DialogTrigger>
+        <CreateSectorDialog onSuccess={() => setDialogCreatedOpen(false)} />
+      </Dialog> -->
+    </div>
+  </header>
+  <section>
+    <!-- <SectorsDataTable /> -->
+  </section>
+</main>
